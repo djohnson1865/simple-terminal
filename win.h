@@ -1,4 +1,10 @@
 /* See LICENSE for license details. */
+#include "/usr/include/X11/Xft/Xft.h"
+
+#define OPAQUE 0Xff
+#define USE_ARGB (alpha != OPAQUE && opt_embed == NULL)
+
+typedef XftGlyphFontSpec GlyphFontSpec;
 
 enum win_mode {
 	MODE_VISIBLE     = 1 << 0,
@@ -23,9 +29,10 @@ enum win_mode {
 	                  |MODE_MOUSEMANY,
 };
 
+void draw(void);
 void xbell(void);
 void xclipcopy(void);
-void xdrawcursor(int, int, Glyph, int, int, Glyph);
+void xdrawcursor(int, int, Glyphy, int, int, Glyphy);
 void xdrawline(Line, int, int, int);
 void xfinishdraw(void);
 void xloadcols(void);

@@ -59,15 +59,16 @@ typedef unsigned short ushort;
 
 typedef uint_least32_t Rune;
 
-#define Glyph Glyph_
+
 typedef struct {
 	Rune u;           /* character code */
 	ushort mode;      /* attribute flags */
 	uint32_t fg;      /* foreground  */
 	uint32_t bg;      /* background  */
-} Glyph;
+} Glyphy;
 
-typedef Glyph *Line;
+
+typedef Glyphy *Line;
 
 typedef union {
 	int i;
@@ -119,5 +120,6 @@ extern char *worddelimiters;
 extern int allowaltscreen;
 extern char *termname;
 extern unsigned int tabspaces;
+extern unsigned int alpha;
 extern unsigned int defaultfg;
 extern unsigned int defaultbg;
