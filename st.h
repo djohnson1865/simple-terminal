@@ -3,6 +3,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+/* History size */
+#define HIST 10000
+
 /* macros */
 #define MIN(a, b)		((a) < (b) ? (a) : (b))
 #define MAX(a, b)		((a) < (b) ? (b) : (a))
@@ -19,6 +22,20 @@
 
 #define TRUECOLOR(r,g,b)	(1 << 24 | (r) << 16 | (g) << 8 | (b))
 #define IS_TRUECOL(x)		(1 << 24 & (x))
+#define TLINE(y)	((y) < term.scr ? term.hist[((y) + term.histi - term.scr \
+                    + HIST + 1) % HIST] : term.line[(y) - term.scr])
+
+
+enum term_mode {
+	MODE_WRAP        = 1 << 0,
+	MODE_INSERT      = 1 << 1,
+	MODE_ALTSCREEN   = 1 << 2,
+	MODE_CRLF        = 1 << 3,
+	MODE_ECHO        = 1 << 4,
+	MODE_PRINT       = 1 << 5,
+	MODE_UTF8        = 1 << 6,
+	MODE_SIXEL       = 1 << 7,
+};
 
 enum glyph_attribute {
 	ATTR_NULL       = 0,
@@ -67,7 +84,6 @@ typedef struct {
 	uint32_t bg;      /* background  */
 } Glyphy;
 
-
 typedef Glyphy *Line;
 
 typedef union {
@@ -76,6 +92,14 @@ typedef union {
 	float f;
 	const void *v;
 } Arg;
+
+typedef struct {
+	uint b;
+	uint mask;
+	void (*func)(const Arg *);
+	const Arg arg;
+} MouseKey;
+
 
 void die(const char *, ...);
 void redraw(void);
@@ -112,6 +136,9 @@ void *xmalloc(size_t);
 void *xrealloc(void *, size_t);
 char *xstrdup(char *);
 
+void kscrollup(const Arg *);
+void kscrolldown(const Arg *);
+
 /* config.h globals */
 extern char *utmp;
 extern char *stty_args;
@@ -123,3 +150,4 @@ extern unsigned int tabspaces;
 extern unsigned int alpha;
 extern unsigned int defaultfg;
 extern unsigned int defaultbg;
+//extern MouseKey mkeys[];

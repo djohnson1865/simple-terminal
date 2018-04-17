@@ -81,47 +81,90 @@ char *termname = "st-256color";
  *	stty tabs
  */
 unsigned int tabspaces = 4;
-unsigned int alpha = 0xCC;
-
+unsigned int alpha = 0x99;
+//
+///* Terminal colors (16 first used in escape sequence) */
+//static const char *colorname[] = {
+//	/* 8 normal colors */
+//	"black",
+//	"red3",
+//	"green3",
+//	"yellow3",
+//	"blue",
+//	"magenta3",
+//	"cyan3",
+//	"gray90",
+//
+//	/* 8 bright colors */
+//	"gray50",
+//	"red",
+//	"green",
+//	"yellow",
+//	"#5c5cff",
+//	"magenta",
+//	"cyan",
+//	"white",
+//
+//	[255] = 0,
+//
+//	/* more colors can be added after 255 to use with DefaultXX */
+//	"#cccccc",
+//	"#555555",
+//	"black",
+//};
+//
+///*
+// * Default colors (colorname index)
+// * foreground, background, cursor, reverse cursor
+// */
+//unsigned int defaultfg = 7;
+//unsigned int defaultbg = 0;
+//
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
-	/* 8 normal colors */
-	"black",
-	"red3",
-	"green3",
-	"yellow3",
-	"blue2",
-	"magenta3",
-	"cyan3",
-	"gray90",
 
-	/* 8 bright colors */
-	"gray50",
-	"red",
-	"green",
-	"yellow",
-	"#5c5cff",
-	"magenta",
-	"cyan",
-	"white",
+  /* 8 normal colors */
+  [0] = "#2e3436", /* black   */
+  [1] = "#cc0000", /* red     */
+  [2] = "#20f100", /* green   */
+  [3] = "#ffd107", /* yellow  */
+  [4] = "#2f73f3", /* blue    */
+  [5] = "#9646a3", /* magenta */
+  [6] = "#09e4e7", /* cyan    */
+  [7] = "#d3d8cf", /* white   */
 
-	[255] = 0,
+  /* 8 bright colors */
+  [8]  = "#555753", /* black   */
+  [9]  = "#ef2929", /* red     */
+  [10] = "#62c500", /* green   */
+  [11] = "#f6aa06", /* yellow  */
+  [12] = "#484ce3", /* blue    */
+  [13] = "#ad7fa8", /* magenta */
+  [14] = "#00b9b9", /* cyan    */
+  [15] = "#eeeeec", /* white   */
 
-	/* more colors can be added after 255 to use with DefaultXX */
-	"#cccccc",
-	"#555555",
-	"black",
+  /* special colors */
+  [256] = "#000000", /* background */
+  [257] = "#dedede", /* foreground */
 };
-
 
 /*
  * Default colors (colorname index)
- * foreground, background, cursor, reverse cursor
+ * foreground, background, cursor
  */
-unsigned int defaultfg = 7;
-unsigned int defaultbg = 257;
-static unsigned int defaultcs = 256;
+unsigned int defaultfg = 257;
+unsigned int defaultbg = 256;
+static unsigned int defaultcs = 257;
 static unsigned int defaultrcs = 257;
+
+/*
+ * Colors used, when the specific fg == defaultfg. So in reverse mode this
+ * will reverse too. Another logic would only make the simple feature too
+ * complex.
+ */
+static unsigned int defaultitalic = 7;
+static unsigned int defaultunderline = 7;
+
 
 /*
  * Default shape of cursor
@@ -158,8 +201,8 @@ static unsigned int defaultattr = 11;
  */
 static MouseShortcut mshortcuts[] = {
 	/* button               mask            string */
-	{ Button4,              XK_NO_MOD,     "\031" },
-	{ Button5,              XK_NO_MOD,     "\005" },
+	{ Button4,              XK_ANY_MOD,     "\031" },
+	{ Button5,              XK_ANY_MOD,     "\005" },
 };
 
 /* Internal keyboard shortcuts. */
@@ -171,8 +214,8 @@ static Shortcut shortcuts[] = {
 	{ XK_ANY_MOD,           XK_Break,       sendbreak,      {.i =  0} },
 	{ ControlMask,          XK_Print,       toggleprinter,  {.i =  0} },
 	{ ShiftMask,            XK_Print,       printscreen,    {.i =  0} },
-	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
-	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i =  5} },
+	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i =  5} },
 	{ XK_ANY_MOD,           XK_Print,       printsel,       {.i =  0} },
 	{ TERMMOD,              XK_Prior,       zoom,           {.f = +1} },
 	{ TERMMOD,              XK_Next,        zoom,           {.f = -1} },
@@ -182,14 +225,15 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
 	{ TERMMOD,              XK_I,           iso14755,       {.i =  0} },
-	{ TERMMOD,              XK_I,           iso14755,       {.i =  0} },
-	{ TERMMOD,              XK_I,           iso14755,       {.i =  0} },
 };
 
+
 static MouseKey mkeys[] = {
-	{ Button4,				XK_NO_MOD,		kscrollup,		{.i =  1} },
-	{ Button5,				XK_NO_MOD,		kscrolldown,	{.i =  1} },
+	{ Button4,				XK_NO_MOD,		kscrollup,	{.i =  3} },
+	{ Button5,				XK_NO_MOD,		kscrolldown,	{.i =  3} },
 };
+
+
 
 /*
  * Special keys (change & recompile st.info accordingly)
